@@ -59,7 +59,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             'format': fmt,
             'outtmpl': '%(title)s.%(ext)s',
             'noplaylist': True,
-            'ffmpeg_location': r'C:\ffmpeg\bin',
             'merge_output_format': 'mp4'
         }
 
