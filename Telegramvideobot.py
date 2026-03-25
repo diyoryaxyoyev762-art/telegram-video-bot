@@ -1,10 +1,10 @@
 import os
 import yt_dlp
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, CallbackQueryHandler, ContextTypes
 
-TOKEN = "8407497874:AAEgTBrOG_I8fTvv0eCRWW7NesdA49nujxM"
-
+TOKEN = os.getenv("BOT_TOKEN")
 user_links = {}
 
 # 📩 Link kelganda
