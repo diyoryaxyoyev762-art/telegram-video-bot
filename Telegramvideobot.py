@@ -1,11 +1,19 @@
 import os
 import yt_dlp
+import threading
+from flask import Flask
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, CallbackQueryHandler, ContextTypes
 
 TOKEN = os.getenv("BOT_TOKEN")
 user_links = {}
+
+app_flask = Flask(name)
+
+@app_flask.route('/')
+def home():
+    return "Bot ishlayapti"
 
 # 📩 Link kelganda
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -23,11 +31,8 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     ]
 
     reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text("📥 Sifatni tanla:", reply_markup=reply_markup)
 
-    await update.message.reply_text(
-        "📥 Sifatni tanla:",
-        reply_markup=reply_markup
-    )
 # 🎯 Tugma bosilganda
 async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
@@ -40,20 +45,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await query.message.reply_text("⏳ Yuklanmoqda...")
 
     try:
-        if choice == "144":
-            fmt = 'bestvideo[height<=144]+bestaudio/best'
-        elif choice == "240":
-            fmt = 'bestvideo[height<=240]+bestaudio/best'
-        elif choice == "360":
-            fmt = 'bestvideo[height<=360]+bestaudio/best'
-        elif choice == "480":
-            fmt = 'bestvideo[height<=480]+bestaudio/best'
-        elif choice == "720":
-            fmt = 'bestvideo[height<=720]+bestaudio/best'
-        elif choice == "1080":
-            fmt = 'bestvideo[height<=1080]+bestaudio/best'
-        else:
-            fmt = 'bestaudio'
+        fmt = 'bestaudio' if choice == "audio" else f'bestvideo[height<={choice}]+bestaudio/best'
 
         ydl_opts = {
             'format': fmt,
@@ -77,11 +69,18 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         await query.message.reply_text(f"❌ Xatolik: {e}")
-# 🚀 BOTNI ISHGA TUSHIRISH
-app = ApplicationBuilder().token(TOKEN).build()
 
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-app.add_handler(CallbackQueryHandler(button_handler))
+# 🚀 Botni ishga tushirish
+def run_bot():
+    app = ApplicationBuilder().token(TOKEN).build()
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    app.add_handler(CallbackQueryHandler(button_handler))
+    print("✅ Bot ishlayapti 🚀")
+    app.run_polling()
 
-print("✅ Bot ishlayapti 🚀")
-app.run_polling()
+threading.Thread(target=run_bot).start()
+
+# 🌐 Flask port ochadi
+if name == "main":
+    port = int(os.environ.get("PORT", 10000))
+    app_flask.run(host="0.0.0.0", port=port)
