@@ -9,7 +9,7 @@ from telegram.ext import ApplicationBuilder, MessageHandler, filters, CallbackQu
 TOKEN = os.getenv("BOT_TOKEN")
 user_links = {}
 
-app_flask = Flask(name)
+app_flask = Flask(__name__)
 
 @app_flask.route('/')
 def home():
