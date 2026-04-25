@@ -81,6 +81,6 @@ def run_bot():
 threading.Thread(target=run_bot).start()
 
 # 🌐 Flask port ochadi
-if name == "main":
+if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
     app_flask.run(host="0.0.0.0", port=port)
