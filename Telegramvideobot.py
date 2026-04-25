@@ -17,7 +17,13 @@ def home():
 
 # 📩 Link kelganda
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+   if update.message.text:
     url = update.message.text
+elif update.message.caption:
+    url = update.message.caption
+else:
+    await update.message.reply_text("❌ Link topilmadi")
+    return
     user_links[update.message.from_user.id] = url
 
     keyboard = [
@@ -73,7 +79,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 # 🚀 Botni ishga tushirish
 def run_bot():
     app = ApplicationBuilder().token(TOKEN).build()
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+   app.add_handler(MessageHandler(filters.ALL, handle_message))
     app.add_handler(CallbackQueryHandler(button_handler))
     print("✅ Bot ishlayapti 🚀")
     app.run_polling()
